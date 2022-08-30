@@ -40,25 +40,6 @@ RW = %01000000
 RS = %00100000
 
 ;================================================================================
-; VGA
-;================================================================================
-VGA_RAM = $8000					; Video Memory (VGA)
-
-SCREEN_WIDTH = 128				; Define pixel count of maximum VGA screen width
-HALF_SCREEN_WIDTH = 64				; Half the value of SCREEN_WIDTH
-SCREEN_HORIZ_OFFSET = 4				; Indent this number of pixels on each line to avoid running into garbage from vertical sync
-
-; Define pixel color values
-COLOR_BLACK	 = $00	; 0
-COLOR_BLUE	 = $0a	; 10
-COLOR_GREEN	 = $10	; 16
-COLOR_LIME	 = $3f	; 63
-COLOR_RED	 = $40	; 64
-COLOR_PINK	 = $44	; 68
-COLOR_YELLOW	 = $50	; 80
-COLOR_WHITE	 = $54	; 84
-
-;================================================================================
 ; Memory Locations
 ;================================================================================
 PROGRAM_LOCATION = $0200                      	; Memory location for user programs
