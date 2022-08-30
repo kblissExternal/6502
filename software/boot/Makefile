@@ -4,7 +4,7 @@ LD=ld65
 all: boot
 
 boot: boot.o
-	$(LD) -C 6502.config -vm -m boot.map -o boot.rom boot.o
+	$(LD) -C boot.config -vm -m boot.map -o boot.rom boot.o
 
 boot.o:
 	$(CA) --cpu 65C02 --listing boot.lst -o boot.o boot.asm
