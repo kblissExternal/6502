@@ -1,6 +1,5 @@
 ; Define ACIA address locations
-ACIA_DATA = $8800		; Receive / Transmit
-;ACIA_DATA = $4000		; Receive / Transmit
+ACIA_DATA = $4000		; Receive / Transmit
 ACIA_STATUS = ACIA_DATA + 1	; Status register
 ACIA_COMMAND = ACIA_DATA + 2	; Command register
 ACIA_CONTROL = ACIA_DATA + 3	; Control register

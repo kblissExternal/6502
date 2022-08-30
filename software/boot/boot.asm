@@ -78,8 +78,6 @@ LCD_RAM = END_OF_RAM - 32                       ; RAM for LCD display (32 bytes)
 
 ;   main - Initialize the bootloader
 main:
-    jsr LIB_run_basic
-
     ldx #$ff                                    ; Initialize the stackpointer with 0xff
     txs
 
