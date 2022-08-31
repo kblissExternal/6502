@@ -176,20 +176,22 @@ main_menu:
     adc POSITION_MENU
     adc POSITION_CURSOR                         ; Determine the selected index
     cmp #0                                      ; Choose the appropriate option
-    beq @run_basic
+    beq @run_monitor
     cmp #1
-    beq @load
+    beq @run_basic
     cmp #2
-    beq @load_vram
+    beq @load
     cmp #3
-    beq @run
+    beq @load_vram
     cmp #4
-    beq @monitor
+    beq @run
     cmp #5
-    beq @clear_ram
+    beq @monitor
     cmp #6
-    beq @clear_vram
+    beq @clear_ram
     cmp #7
+    beq @clear_vram
+    cmp #8
     beq @about
     jmp @end                                    ; Restart
 
@@ -200,6 +202,13 @@ main_menu:
     jsr LIB_LCD_print
 
     jsr LIB_run_basic
+    jmp @begin
+@run_monitor:
+    lda #<message6
+    ldy #>message6
+    jsr LIB_LCD_print
+
+    jsr LIB_run_monitor
     jmp @begin
 @load:
     ; Set X and Y to the address for user programs
@@ -724,6 +733,12 @@ LIB_sleep:
 
     rts
 
+LIB_run_monitor:
+    jsr LIB_ACIA_initialize
+    jsr MonitorBoot
+
+    rts
+
 ; Start of EH Basic Code.  Adapted from min_mon.asm (https://bit.ly/3PZ49RJ)
 LIB_run_basic:
 IRQ_vec     = VEC_SV + 2    ; IRQ code vector
@@ -829,6 +844,7 @@ LAB_mess
 .include "..\acia\acia.asm"
 .include "..\ehbasic\ehbasic.asm"
 .include "..\vga\vga.asm"
+.include "..\monitor\sbc.asm"
 
 message0:
     .asciiz "6502 Prototype  Boot 1.0"
@@ -842,12 +858,14 @@ message4:
     .asciiz "Clearing RAM"
 message5:
     .asciiz "Derived from    EhBasic v2.22   "
-test:
-    .asciiz "LET A = 1"
+message6:
+    .asciiz "Monitor Running                 "
 
 position_map:
-    .byte $00, $01, $03, $05, $07, $09
+    ;.byte $00, $01, $03, $05, $07, $09
+    .byte $00, $01, $02, $03, $04, $05, $06, $07, $08
 menu_items:
+    .byte " Run Monitor    "
     .byte " Run EH Basic   "
     .byte " Load Program   "
     .byte " Load VGA RAM   "
