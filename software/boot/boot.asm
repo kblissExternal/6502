@@ -87,17 +87,17 @@ main_menu:
 
     jmp @begin
 @MAX_SCREEN_POS:                                ; define some constants in ROM     
-    .byte $06                                   ; Number of menu items - 2
+    .byte $07                                   ; Number of menu items - 1
 @OFFSETS:
-    .byte $00, $10, $20, $30, $40, $50, $60     ; Offsets for each menu item
+    .byte $00, $10, $20, $30, $40, $50, $60, $70     ; Offsets for each menu item
 @begin:
     jsr LIB_LCD_clear
     ldx POSITION_MENU
-    ldy @OFFSETS,X				; Load first offset into Y
+    ldy @OFFSETS,X				                ; Load first offset into Y
     ldx #0
 @loop:
     lda menu_items,Y                            ; Load character for index Y
-    sta LCD_RAM,X                             ; Store in LCD memory at X
+    sta LCD_RAM,X                               ; Store in LCD memory at X
     iny
     inx
     cpx #$20                                    ; Repeat 32 times
@@ -862,8 +862,7 @@ message6:
     .asciiz "Monitor Running                 "
 
 position_map:
-    ;.byte $00, $01, $03, $05, $07, $09
-    .byte $00, $01, $02, $03, $04, $05, $06, $07, $08
+    .byte $00, $01, $03, $05, $07, $09
 menu_items:
     .byte " Run Monitor    "
     .byte " Run EH Basic   "

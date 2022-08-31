@@ -38,7 +38,7 @@ LIB_VGA_clear_vram:
 ;
 ;   LIB_VGA_draw_pixel - Draw a pixel to VGA memory using the given parameters
 ;
-;   ————————————————————————————————————
+;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ;   Preparatory Ops: @A: byte representing the color value to store for each pixel
 ;                    @Y: byte representing the width of the pixel
 ;                    @X: byte representing the height of the pixel
@@ -46,7 +46,7 @@ LIB_VGA_clear_vram:
 ;   Returned Values: none
 ;
 ;   Destroys:       .A, X, Y
-;   ————————————————————————————————————
+;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ;
 ;================================================================================
 
@@ -161,13 +161,13 @@ LIB_VGA_newline:
 ;
 ;   LIB_VGA_write_character - write the given ASCII character to VGA
 ;
-;   ————————————————————————————————————
+;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ;   Preparatory Ops: @X: byte representing the ASCII code of the character
 ;
 ;   Returned Values: none
 ;
 ;   Destroys:       .A, X, Y
-;   ————————————————————————————————————
+;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ;
 ;================================================================================
 
@@ -289,14 +289,14 @@ LIB_VGA_write_character:
 ;
 ;   LIB_VGA_write_string - write a complete null terminated string to VGA memory
 ;
-;   ————————————————————————————————————
+;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ;   Preparatory Ops: @A: LSN String Address
 ;                    @Y: MSN String Address
 ;
 ;   Returned Values: none
 ;
 ;   Destroys:       .A, X, Y
-;   ————————————————————————————————————
+;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ;
 ;================================================================================
 
