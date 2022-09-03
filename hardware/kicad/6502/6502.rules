@@ -11,7 +11,7 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 8133)
+    (start_pass_no 15820)
     (layer_rule F.Cu
       (active on)
       (preferred_direction horizontal)
@@ -62,7 +62,8 @@
     /D1 /D0 /~{RW} "unconnected-(U2-Pad35)" /PB4 /PHI2 /PB5 "unconnected-(U2-Pad39)"
     /PB6 "unconnected-(X1-Pad1)" /~{RES} /~{ROMCS} /PB7 /PA0 /~{RAMCS} /PA1
     /PA2 /PA3 /PA4 /~{VIACS2} /CA2 /CA1 /~{A14} /~{A15}
-    "Net-(U7-Pad11)" "Net-(U7-Pad12)" /~{PHI2}
+    "Net-(U7-Pad11)" "Net-(U7-Pad12)" /~{PHI2} "unconnected-(RV1-Pad3)" "unconnected-(J4-Pad4)" "/~{UART_RTS}" /~{ACIACS} "unconnected-(U9-Pad6)"
+    "unconnected-(U9-Pad8)" "unconnected-(U9-Pad11)" "unconnected-(X2-Pad1)" /PHI3 "unconnected-(U8-Pad5)" "unconnected-(U8-Pad7)" "/UART_TX" "/UART_RX"
     (clearance_class default)
     (via_rule default)
     (rule
