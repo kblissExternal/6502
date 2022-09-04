@@ -131,11 +131,11 @@ main_menu:
       
 ; In the main menu the user can move up, down, or right to select an item
 @handle_input:
-    cmp #$01    
+    cmp #$04
     beq @move_up                                ; UP key pressed
-    cmp #$02
-    beq @move_down                              ; DOWN key pressed
     cmp #$08
+    beq @move_down                              ; DOWN key pressed
+    cmp #$02
     beq @move_right                             ; RIGHT key pressed
     lda #0                                      ; Must set A back to 0
     jmp @wait_for_input                         ; Wait for futher input
@@ -353,13 +353,13 @@ do_monitor:
     beq @wait_for_input                         ; Wait again if no key was pressed
  
 @handle_input:
-    cmp #$01    
+    cmp #$04    
     beq @move_up                                ; UP key pressed
-    cmp #$02
-    beq @move_down                              ; DOWN key pressed
-    cmp #$04
-    beq @exit					; LEFT key pressed
     cmp #$08
+    beq @move_down                              ; DOWN key pressed
+    cmp #$01
+    beq @exit					; LEFT key pressed
+    cmp #$02
     beq @page_down                           	; RIGHT key pressed
     lda #0
     jmp @wait_for_input
@@ -452,8 +452,6 @@ do_monitor:
 ; Return key presses from the attached buttons
 LIB_VIA_read_input:
     lda PORTA                                   ; Load current status from VIA
-    ror
-    and #$0f                                    ; Ignore the first 4 bits
     eor #$0f
 
     rts
@@ -595,11 +593,11 @@ LIB_LCD_print_scrollable:
     jmp @wait_for_input
 
 @handle_input:
-    cmp #$01    
+    cmp #$04    
     beq @move_up                                ; UP key pressed
-    cmp #$02
+    cmp #$08
     beq @move_down                              ; DOWN key pressed
-    cmp #$04
+    cmp #$01
     beq @exit                                   ; LEFT key pressed
     lda #0
     jmp @wait_for_input
