@@ -1,3 +1,5 @@
 (fp_lib_table
   (lib (name "Graphics")(type "KiCad")(uri "C:/Users/Korey/source/repos/6502/hardware/kicad/graphics.pretty")(options "")(descr ""))
+  (lib (name "VGA")(type "KiCad")(uri "C:/Users/Korey/source/repos/6502/hardware/kicad/vga.pretty")(options "")(descr ""))
+  (lib (name "Switch")(type "KiCad")(uri "C:/Users/Korey/source/repos/6502/hardware/kicad/switch.pretty")(options "")(descr ""))
 )

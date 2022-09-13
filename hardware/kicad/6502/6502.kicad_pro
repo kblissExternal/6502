@@ -429,6 +429,18 @@
     [
       "cf1f22f3-0acf-4a6c-97a8-82f952d7b1a8",
       ""
+    ],
+    [
+      "2d28447c-d0b0-4232-92bd-a17934be25e8",
+      "VGA"
+    ],
+    [
+      "b82820ab-69a0-4971-a188-b9981c0e2d00",
+      "Horizontal"
+    ],
+    [
+      "68722c35-82b3-4bce-a11b-e686c62c282d",
+      "Vertical"
     ]
   ],
   "text_variables": {}

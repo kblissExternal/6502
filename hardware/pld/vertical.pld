@@ -1,0 +1,29 @@
+Name            vertical;
+Partno          VGA-VERT;
+Revision        01;
+Date            09/10/2022;
+Designer        Korey Bliss;
+Company         ;
+Location        USA;
+Assembly        None;
+Device          g16v8a;
+
+/* Define values for 640x400 */
+$DEFINE VISIBLE_AREA 'd'400
+$DEFINE FRONT_PORCH  'd'412
+$DEFINE SYNC_PULSE   'd'414
+$DEFINE BACK_PORCH   'd'449
+
+/* Input */
+Pin [1..9]  = [Q0..8];	/* Counter bits 0-8 */
+
+/* Output */
+Pin 16 = VA_SET;
+Pin 15 = FP_SET;
+Pin 14 = SP_SET;
+Pin 13 = CLR;
+
+!VA_SET = [Q0..8]:VISIBLE_AREA;
+!FP_SET = [Q0..8]:FRONT_PORCH;
+!SP_SET = [Q0..8]:SYNC_PULSE;
+!CLR    = [Q0..8]:BACK_PORCH;
