@@ -11,7 +11,7 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 35581)
+    (start_pass_no 49017)
     (layer_rule F.Cu
       (active on)
       (preferred_direction horizontal)
@@ -53,40 +53,35 @@
     "kicad_default" "Via[0-1]_800:400_um-kicad_default"
   )
   (class default
-    GND VCC "Net-(D1-Pad2)" "Net-(D2-Pad1)" /A0 /A1 /A2 /A3
-    /CB1 /CB2 "Net-(J1-Pad1)" /~{HBLANK} /~{VBLANK} /~{HSYNC} /PHI1 /CNTRST
-    /PA5 /PA6 /PA7 /PB0 /PB1 "unconnected-(U2-Pad1)" /PB2 "unconnected-(U2-Pad3)"
-    /~{IRQ} "unconnected-(U2-Pad5)" /PB3 "unconnected-(U2-Pad7)" /A4 /A5 /A6 /A7
-    /A8 /A9 /A10 /A11 /A12 /A13 /A14 /A15
-    /D7 /D6 /D5 /D4 /D3 /D2 /D1 /D0
-    /~{RW} "unconnected-(U2-Pad35)" /PB4 /PHI2 /PB5 "unconnected-(U2-Pad39)" /PB6 "unconnected-(X1-Pad1)"
-    /~{RES} /~{ROMCS} /PB7 /PA0 /~{RAMCS} /PA1 /PA2 /PA3
-    /PA4 /CA2 /CA1 "unconnected-(RV1-Pad3)" "unconnected-(J4-Pad4)" "/~{UART_RTS}" /~{ACIACS} "unconnected-(X2-Pad1)"
-    /~{VSYNC} "unconnected-(U8-Pad5)" "unconnected-(U8-Pad7)" "/UART_TX" "/UART_RX" "/CPU_CLOCK" "/~{CPU_CLOCK}" ~{DMA}
-    "/VGA/VGA_RED" "unconnected-(J6-Pad12)" "/VGA/VGA_BLUE" "/VGA/VGA_GREEN" "unconnected-(J6-Pad4)" "unconnected-(J6-Pad11)" /VGA/~{VSYNC} /VGA/~{HSYNC}
-    "unconnected-(J6-Pad15)" "/GAL0_I0" "/GAL0_I1" "/GAL0_I2" "/GAL0_I3" "/GAL3_I0" "/GAL3_I1" "/GAL3_I2"
-    "/GAL0_O0" "/GAL0_O1" "/GAL3_O0" "/GAL3_O1" "/GAL3_O2" "/GAL3_O3" /VGA/BA0 "/VGA/H_Q3"
-    /VGA/BA1 "/VGA/H_Q4" /VGA/BA2 "/VGA/H_Q5" /VGA/BA3 "/VGA/H_Q6" /VGA/BA4 "/VGA/H_Q7"
-    /VGA/BA5 "/VGA/H_Q8" /VGA/BA6 "/VGA/H_Q9" /VGA/BA7 "/VGA/V_Q3" /VGA/BA8 "/VGA/V_Q4"
-    /VGA/BA9 "/VGA/V_Q5" /VGA/BA10 "/VGA/V_Q6" /VGA/BA11 "/VGA/V_Q7" /VGA/BA12 "/VGA/V_Q8"
-    /VGA/BA13 "/VGA/V_Q9" /VGA/BA14 /VGA/BA15 "/VGA/H_Q0" "/VGA/V_Q0" "/VGA/H_Q1" "/VGA/V_Q1"
-    "/VGA/H_Q2" "/VGA/V_Q2" "/VGA/VC_0" "/VGA/VGA_CLOCK" "/VGA/VC_1" "/VGA/VC_2" /VGA/BD0 /VGA/BD1
-    /VGA/BD2 /VGA/BD3 /VGA/BD4 /VGA/BD5 "/VGA/GAL3_I3" "/VGA/GAL3_I4" "/VGA/GAL3_I5" "/VGA/GAL3_I6"
-    /VGA/PHI3 /VGA/PHI4 "unconnected-(SW8-Pad3)" /~{VIACS} /~{RAMOE} "/VGA/Horizontal/~{H_CLR}" "/VGA/Horizontal/VGA_CLOCK" "unconnected-(U6-Pad3)"
-    "unconnected-(U6-Pad4)" "unconnected-(U6-Pad5)" "unconnected-(U6-Pad6)" "/VGA/Horizontal/H_Q3" "/VGA/Horizontal/H_Q2" "/VGA/Horizontal/H_Q1" "/VGA/Horizontal/H_Q0" /VGA/Horizontal/HCARRY1
-    "/VGA/Horizontal/H_Q4" "/VGA/Horizontal/H_Q5" "/VGA/Horizontal/H_Q6" "/VGA/Horizontal/H_Q7" "/VGA/Horizontal/H_Q8" "/VGA/Horizontal/H_Q9" "/VGA/Horizontal/GAL1_O3" "/VGA/Horizontal/GAL1_O2"
-    "/VGA/Horizontal/GAL1_O1" "/VGA/Horizontal/GAL1_O0" "/VGA/Horizontal/~{H_SP}" "/VGA/Horizontal/~{H_FP}" "/VGA/Horizontal/~{H_VA}" /VGA/~{HBLANK} /VGA/~{VBLANK} "/VGA/~{CPU_CLOCK}"
-    "/VGA/GAL3_I0" "/VGA/GAL3_I1" "/VGA/GAL3_I2" "/VGA/GAL3_O4" "/VGA/GAL3_O3" "/VGA/GAL3_O2" "/VGA/GAL3_O1" "/VGA/GAL3_O0"
-    /VGA/~{BDCS} /VGA/~{BACS} /VGA/~{DMA} /VGA/Horizontal/~{HBLANK} "Net-(U10-Pad3)" "Net-(U10-Pad12)" /VGA/Horizontal/~{HSYNC} "/VGA/Vertical/~{V_CLR}"
-    "/VGA/Vertical/~{H_CLR}" "unconnected-(U11-Pad3)" "unconnected-(U11-Pad4)" "unconnected-(U11-Pad5)" "unconnected-(U11-Pad6)" "/VGA/Vertical/V_Q3" "/VGA/Vertical/V_Q2" "/VGA/Vertical/V_Q1"
-    "/VGA/Vertical/V_Q0" /VGA/Vertical/VCARRY1 "/VGA/Vertical/V_Q4" "/VGA/Vertical/V_Q5" "/VGA/Vertical/V_Q6" "/VGA/Vertical/V_Q7" "/VGA/Vertical/V_Q8" "/VGA/Vertical/V_Q9"
-    "/VGA/Vertical/GAL2_O3" "/VGA/Vertical/GAL2_O2" "/VGA/Vertical/GAL2_O1" "/VGA/Vertical/GAL2_O0" "/VGA/Vertical/~{V_SP}" "/VGA/Vertical/~{V_FP}" "/VGA/Vertical/~{V_VA}" /VGA/Vertical/~{VBLANK}
-    "Net-(U13-Pad3)" "Net-(U13-Pad12)" /VGA/Vertical/~{VSYNC} "unconnected-(U14-Pad1)" "Net-(U14-Pad2)" "unconnected-(U14-Pad4)" "Net-(U14-Pad12)" "unconnected-(U14-Pad10)"
-    "unconnected-(U14-Pad13)" /VGA/BD6 /VGA/BD7 "unconnected-(U18-Pad3)" "unconnected-(U18-Pad4)" "unconnected-(U18-Pad5)" "unconnected-(U18-Pad6)" /VGA/Horizontal/HCARRY2
-    "unconnected-(U19-Pad3)" "unconnected-(U19-Pad4)" "unconnected-(U19-Pad5)" "unconnected-(U19-Pad6)" "unconnected-(U19-Pad11)" "unconnected-(U19-Pad12)" "unconnected-(U19-Pad15)" "unconnected-(U20-Pad3)"
-    "unconnected-(U20-Pad4)" "unconnected-(U20-Pad5)" "unconnected-(U20-Pad6)" /VGA/Vertical/VCARRY2 "unconnected-(U21-Pad3)" "unconnected-(U21-Pad4)" "unconnected-(U21-Pad5)" "unconnected-(U21-Pad6)"
-    "unconnected-(U21-Pad11)" "unconnected-(U21-Pad12)" "unconnected-(U21-Pad15)" "unconnected-(X3-Pad1)" "unconnected-(X4-Pad1)" /VGA/RGB0 /VGA/RGB1 /VGA/RGB2
-    /VGA/RGB3 /VGA/RGB4 /VGA/RGB5 "unconnected-(U17-Pad8)" "unconnected-(U17-Pad9)"
+    "Net-(D1-Pad2)" "Net-(D2-Pad1)" /A0 /A1 /A2 /A3 /CB1 /CB2
+    "Net-(J1-Pad1)" /~{HBLANK} /~{VBLANK} /~{HSYNC} /PHI1 /CNTRST /PA5 /PA6
+    /PA7 /PB0 /PB1 "unconnected-(U2-Pad1)" /PB2 "unconnected-(U2-Pad3)" /~{IRQ} "unconnected-(U2-Pad5)"
+    /PB3 "unconnected-(U2-Pad7)" /A4 /A5 /A6 /A7 /A8 /A9
+    /A10 /A11 /A12 /A13 /A14 /A15 /D7 /D6
+    /D5 /D4 /D3 /D2 /D1 /D0 /~{RW} "unconnected-(U2-Pad35)"
+    /PB4 /PHI2 /PB5 "unconnected-(U2-Pad39)" /PB6 "unconnected-(X1-Pad1)" /~{RES} /~{ROMCS}
+    /PB7 /PA0 /~{RAMCS} /PA1 /PA2 /PA3 /PA4 /CA2
+    /CA1 "unconnected-(RV1-Pad3)" "unconnected-(J4-Pad4)" "/~{UART_RTS}" /~{ACIACS} "unconnected-(X2-Pad1)" /~{VSYNC} "unconnected-(U8-Pad5)"
+    "unconnected-(U8-Pad7)" "/UART_TX" "/UART_RX" "/CPU_CLOCK" "/~{CPU_CLOCK}" /~{DMA} "/VGA/VGA_RED" "unconnected-(J6-Pad12)"
+    "/VGA/VGA_BLUE" "/VGA/VGA_GREEN" "unconnected-(J6-Pad4)" "unconnected-(J6-Pad11)" "/H_Q3" "/H_Q4" "unconnected-(J6-Pad15)" "/GAL0_I0"
+    "/GAL0_I1" "/GAL0_I2" "/GAL0_I3" "/GAL3_I0" "/GAL3_I1" "/GAL3_I2" "/GAL0_O0" "/VGA_CLOCK"
+    "/GAL3_O0" "/GAL3_O1" "/GAL3_O2" "/GAL3_O3" /VGA/BA0 "/H_Q5" /VGA/BA1 "/H_Q6"
+    /VGA/BA2 "/H_Q7" /VGA/BA3 "/H_Q8" /VGA/BA4 "/H_Q9" /VGA/BA5 "/V_Q3"
+    /VGA/BA6 "/V_Q4" /VGA/BA7 "/V_Q5" /VGA/BA8 "/V_Q6" /VGA/BA9 "/V_Q7"
+    /VGA/BA10 "/V_Q8" /VGA/BA11 "/V_Q9" /VGA/BA12 "/H_Q0" /VGA/BA13 "/V_Q0"
+    /VGA/BA14 /VGA/BA15 "/H_Q1" "/V_Q1" "/H_Q2" "/V_Q2" "/GAL3_I3" "/GAL3_I4"
+    "/VGA/VC_0" "/CPU_READY" "/VGA/VC_1" "/VGA/VC_2" /VGA/BD0 /VGA/BD1 /VGA/BD2 /VGA/BD3
+    /VGA/BD4 /VGA/BD5 "/GAL3_I5" "/GAL3_I6" "/GAL3_O4" /VGA/PHI3 /VGA/PHI4 "unconnected-(SW8-Pad3)"
+    /~{VIACS} /~{RAMOE} "/VGA/Horizontal/~{H_CLR}" "unconnected-(U6-Pad3)" "unconnected-(U6-Pad4)" "unconnected-(U6-Pad5)" "unconnected-(U6-Pad6)" /VGA/Horizontal/HCARRY1
+    "/VGA/Horizontal/GAL1_O3" "/VGA/Horizontal/GAL1_O2" "/VGA/Horizontal/GAL1_O1" "/VGA/Horizontal/GAL1_O0" "/VGA/Horizontal/~{H_SP}" "/VGA/Horizontal/~{H_FP}" "/VGA/Horizontal/~{H_VA}" /VGA/~{BDCS}
+    /VGA/~{BACS} "Net-(U10-Pad3)" "Net-(U10-Pad12)" "/VGA/Vertical/~{V_CLR}" "unconnected-(U11-Pad3)" "unconnected-(U11-Pad4)" "unconnected-(U11-Pad5)" "unconnected-(U11-Pad6)"
+    /VGA/Vertical/VCARRY1 "/VGA/Vertical/GAL2_O3" "/VGA/Vertical/GAL2_O2" "/VGA/Vertical/GAL2_O1" "/VGA/Vertical/GAL2_O0" "/VGA/Vertical/~{V_SP}" "/VGA/Vertical/~{V_FP}" "/VGA/Vertical/~{V_VA}"
+    "Net-(U13-Pad3)" "Net-(U13-Pad12)" "unconnected-(U14-Pad1)" "Net-(U14-Pad2)" "unconnected-(U14-Pad4)" "Net-(U14-Pad12)" "unconnected-(U14-Pad10)" "unconnected-(U14-Pad13)"
+    /VGA/BD6 /VGA/BD7 "unconnected-(U18-Pad3)" "unconnected-(U18-Pad4)" "unconnected-(U18-Pad5)" "unconnected-(U18-Pad6)" /VGA/Horizontal/HCARRY2 "unconnected-(U19-Pad3)"
+    "unconnected-(U19-Pad4)" "unconnected-(U19-Pad5)" "unconnected-(U19-Pad6)" "unconnected-(U19-Pad11)" "unconnected-(U19-Pad12)" "unconnected-(U19-Pad15)" "unconnected-(U20-Pad3)" "unconnected-(U20-Pad4)"
+    "unconnected-(U20-Pad5)" "unconnected-(U20-Pad6)" /VGA/Vertical/VCARRY2 "unconnected-(U21-Pad3)" "unconnected-(U21-Pad4)" "unconnected-(U21-Pad5)" "unconnected-(U21-Pad6)" "unconnected-(U21-Pad11)"
+    "unconnected-(U21-Pad12)" "unconnected-(U21-Pad15)" "unconnected-(X3-Pad1)" "unconnected-(X4-Pad1)" /VGA/RGB0 /VGA/RGB1 /VGA/RGB2 /VGA/RGB3
+    /VGA/RGB4 /VGA/RGB5 "unconnected-(U17-Pad8)" "unconnected-(U17-Pad9)" VCC GND
     (clearance_class default)
     (via_rule default)
     (rule

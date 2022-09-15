@@ -1,0 +1,23 @@
+Name            dma;
+Partno          VGA-DMA;
+Revision        01;
+Date            09/14/2022;
+Designer        Korey Bliss;
+Company         ;
+Location        USA;
+Assembly        None;
+Device          g16v8a;
+
+/* Input */
+Pin 1  = CPU_CLOCK;
+Pin 2  = HBLANK;
+Pin 3  = VBLANK;
+
+/* Output */
+Pin 19 = DMA;
+Pin 18 = BACS;
+Pin 17 = BDCS;
+
+BDCS = !(HBLANK & VBLANK);
+DMA.d = BDCS;
+BACS = DMA;

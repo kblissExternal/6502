@@ -18,12 +18,12 @@ $DEFINE BACK_PORCH   'd'449
 Pin [1..9]  = [Q0..8];	/* Counter bits 0-8 */
 
 /* Output */
-Pin 16 = VA_SET;
-Pin 15 = FP_SET;
-Pin 14 = SP_SET;
-Pin 13 = CLR;
+Pin 19 = V_VA;
+Pin 18 = V_FP;
+Pin 17 = V_SP;
+Pin 16 = V_CLR;
 
-!VA_SET = [Q0..8]:VISIBLE_AREA;
-!FP_SET = [Q0..8]:FRONT_PORCH;
-!SP_SET = [Q0..8]:SYNC_PULSE;
-!CLR    = [Q0..8]:BACK_PORCH;
+!V_VA  = [Q0..8]:VISIBLE_AREA;
+!V_FP  = [Q0..8]:FRONT_PORCH;
+!V_SP  = [Q0..8]:SYNC_PULSE;
+!V_CLR = [Q0..8]:BACK_PORCH;
