@@ -46,11 +46,11 @@ PROGRAM_LOCATION = $0200                      	; Memory location for user progra
 
 END_OF_RAM = $3fde
 
-SHIFT_COUNT = CHARACTER_COLOR - 1		; Counts VGA character shifts (1 byte)
-CHARACTER_COLOR = CHARACTER_SHIFTER - 1		; Stores VGA character color (1 byte)
-CHARACTER_SHIFTER = SCREEN_CURSOR - 2		; Tracks VGA character shifting (2 bytes)
-SCREEN_CURSOR = WAIT - 2			; Stores VGA cursor position (2 bytes)
-WAIT = POSITION_MENU - 1			; Stores current wait count for sleep function (1 byte)
+SHIFT_COUNT = CHARACTER_COLOR - 1		        ; Counts VGA character shifts (1 byte)
+CHARACTER_COLOR = CHARACTER_SHIFTER - 1		    ; Stores VGA character color (1 byte)
+CHARACTER_SHIFTER = SCREEN_CURSOR - 2		    ; Tracks VGA character shifting (2 bytes)
+SCREEN_CURSOR = WAIT - 2			            ; Stores VGA cursor position (2 bytes)
+WAIT = POSITION_MENU - 1			            ; Stores current wait count for sleep function (1 byte)
 POSITION_MENU = POSITION_CURSOR - 1           	; Position for LCD menu (1 byte)
 POSITION_CURSOR = LCD_RAM - 1                 	; Position for LCD cursor (1 byte)
 LCD_RAM = END_OF_RAM - 32                       ; RAM for LCD display (32 bytes)
@@ -62,7 +62,9 @@ main:
     ldx #$ff                                    ; Initialize the stackpointer with 0xff
     txs
 
-    jsr LIB_LCD_initialize			; Initialize the LCD display and clear the screen
+    ;jsr LIB_run_monitor
+
+    jsr LIB_LCD_initialize			            ; Initialize the LCD display and clear the screen
     jsr LIB_LCD_clear
 
     lda #<message0                          	; Display the boot screen
@@ -452,6 +454,8 @@ do_monitor:
 ; Return key presses from the attached buttons
 LIB_VIA_read_input:
     lda PORTA                                   ; Load current status from VIA
+
+    and #$0f
     eor #$0f
 
     rts

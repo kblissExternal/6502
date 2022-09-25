@@ -8,14 +8,15 @@ Location        USA;
 Assembly        None;
 Device          g16v8a;
 
-/* Define values for 640x400 */
-$DEFINE VISIBLE_AREA 'd'400
-$DEFINE FRONT_PORCH  'd'412
-$DEFINE SYNC_PULSE   'd'414
-$DEFINE BACK_PORCH   'd'449
+/* Define values for 800x600 */
+$DEFINE VISIBLE_AREA 'd'600
+$DEFINE FRONT_PORCH  'd'601
+$DEFINE SYNC_PULSE   'd'605
+$DEFINE BACK_PORCH   'd'628
 
 /* Input */
 Pin [1..9]  = [Q0..8];	/* Counter bits 0-8 */
+Pin 11 = Q9;
 
 /* Output */
 Pin 19 = V_VA;
@@ -23,7 +24,7 @@ Pin 18 = V_FP;
 Pin 17 = V_SP;
 Pin 16 = V_CLR;
 
-!V_VA  = [Q0..8]:VISIBLE_AREA;
-!V_FP  = [Q0..8]:FRONT_PORCH;
-!V_SP  = [Q0..8]:SYNC_PULSE;
-!V_CLR = [Q0..8]:BACK_PORCH;
+!V_VA  = [Q0..9]:VISIBLE_AREA;
+!V_FP  = [Q0..9]:FRONT_PORCH;
+!V_SP  = [Q0..9]:SYNC_PULSE;
+!V_CLR = [Q0..9]:BACK_PORCH;

@@ -146,16 +146,16 @@ LIB_ACIA_rx_xmodem:
     lda #$00
     sta Z0
     inc Z1
-    jmp @rx_byte
+    jmp @rx_block
 @increment_page:
     lda #$80
     sta Z0
-    jmp @rx_byte
+    jmp @rx_block
 @rx_complete:
     lda #$6                 ; ACK the EOT packet
     jsr LIB_ACIA_tx
     lda #1                  ; Brief delay
-    jsr LIB_ACIA_rx_delay
+    ;jsr LIB_ACIA_rx_delay
     jsr LIB_ACIA_tx_newline
     lda #0
     jmp @exit

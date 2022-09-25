@@ -9,9 +9,10 @@ Assembly        None;
 Device          g16v8a;
 
 /* Input */
-Pin 1  =  CPU_CLOCK;
-Pin [2..5]  = [A12..15];
-Pin 6  =  DMA;
+Pin 1       =  CPU_CLOCK;
+Pin [2..5]  =  [A12..15];
+Pin 6       =  DMA;
+Pin 7       =  GAL0_I0;
 
 /* Output */
 Pin 19 = ROMCS;
@@ -25,17 +26,17 @@ Pin 13 = CPU_CLOCK_B;
 FIELD Address = [A15..A00];
 
 RAM       = Address:[0000..3FFF];
-VIA       = Address:[4000..5FFF];
-ACIA      = Address:[6000..7FFF];
+ACIA      = Address:[4000..5FFF];
+VIA       = Address:[6000..7FFF];
 VGA_RAM   = Address:[8000..BFFF];
 ROM       = Address:[C000..FFFF];
 
-ROMCS     = ROM;
-RAMCS     = CPU_CLOCK & (RAM # VGA_RAM) & DMA;
-RAMOE     = CPU_CLOCK & (RAM # VGA_RAM);
+!ROMCS    = ROM;
+!RAMCS    = (CPU_CLOCK & (RAM # VGA_RAM)) # !DMA;
+RAMOE     = RAMCS;
 
-VIACS     = VIA;
-ACIACS    = ACIA;
+!VIACS    = VIA;
+!ACIACS   = ACIA & DMA;
 
-CPU_READY   = !DMA;
+CPU_READY   = DMA;
 CPU_CLOCK_B = !CPU_CLOCK;

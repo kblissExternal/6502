@@ -9,5 +9,8 @@ boot: boot.o
 boot.o:
 	$(CA) --cpu 65C02 --listing boot.lst -o boot.o boot.asm
 
+test.o:
+	$(CA) --cpu 65C02 --listing test.lst -o test.o test.asm
+
 clean:
 	del *.o *.rom *.map *.lst

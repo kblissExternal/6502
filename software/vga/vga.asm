@@ -21,7 +21,8 @@ LIB_VGA_clear_vram:
     lda #>VGA_RAM
     sta Z1
 
-    lda #$00 ; Data to load into each address
+    ;lda #$00 ; Data to load into each address
+    lda #$40 ; Data to load into each address
     ldy #0
     ldx #48 ; Number of pages to clear
 @loop:

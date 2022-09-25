@@ -9,15 +9,36 @@ Assembly        None;
 Device          g16v8a;
 
 /* Input */
-Pin 1  = CPU_CLOCK;
-Pin 2  = HBLANK;
-Pin 3  = VBLANK;
+Pin 1   = CPU_CLOCK_B;
+Pin 2   = HBLANK;
+Pin 3   = VBLANK;
+Pin 4   = GAL3_I0;
+Pin 5   = GAL3_I1;
+Pin 6   = GAL3_I2;
+Pin 7   = DIP4;
+Pin 8   = DIP3;
+Pin 9   = DIP2;
 
 /* Output */
 Pin 19 = DMA;
 Pin 18 = BACS;
 Pin 17 = BDCS;
+Pin 16 = GAL3_O0;
+Pin 15 = GAL3_O1;
+Pin 14 = GAL3_O2;
+Pin 13 = GAL3_O3;
+Pin 12 = GAL3_O4;
 
-BDCS = !(HBLANK & VBLANK);
-DMA.d = BDCS;
+/*  DIP Switch Functions							*/
+/*										*/
+/*  DIP3	ON	CPU runs during Horizontal and Vertical Blanking	*/
+/*  		OFF	CPU runs during Vertical Blanking only			*/
+/*										*/
+/*  DIP4	ON	CPU runs in tandem with VGA				*/
+/*  		OFF	CPU runs at all times, VGA disabled			*/
+/*										*/
+
+/* Currently HBLANK and VBLANK will be high during blanking interval */
+!BDCS = DIP4 & !((HBLANK & DIP3) # VBLANK);
+DMA.D = BDCS;
 BACS = DMA;
