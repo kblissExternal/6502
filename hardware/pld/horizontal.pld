@@ -8,11 +8,11 @@ Location        USA;
 Assembly        None;
 Device          g16v8a;
 
-/* Define values for 800x600 at half normal frequency */
-$DEFINE VISIBLE_AREA 'd'400
-$DEFINE FRONT_PORCH  'd'420
-$DEFINE SYNC_PULSE   'd'484
-$DEFINE BACK_PORCH   'd'528
+/* Define values for 640x480 at quarter normal frequency */
+$DEFINE VISIBLE_AREA 'd'160
+$DEFINE FRONT_PORCH  'd'164
+$DEFINE SYNC_PULSE   'd'188
+$DEFINE BACK_PORCH   'd'200
 
 /* Input */
 Pin [1..9]  = [Q0..8];	/* Counter bits 0-8 */

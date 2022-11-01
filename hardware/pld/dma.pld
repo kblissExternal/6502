@@ -12,7 +12,7 @@ Device          g16v8a;
 Pin 1   = CPU_CLOCK_B;
 Pin 2   = HBLANK;
 Pin 3   = VBLANK;
-Pin 4   = GAL3_I0;
+Pin 4   = GAL3_I0;	/* True if in RAM or VGA RAM */
 Pin 5   = GAL3_I1;
 Pin 6   = GAL3_I2;
 Pin 7   = DIP4;
@@ -39,6 +39,22 @@ Pin 12 = GAL3_O4;
 /*										*/
 
 /* Currently HBLANK and VBLANK will be high during blanking interval */
-!BDCS = DIP4 & !((HBLANK & DIP3) # VBLANK);
-DMA.D = BDCS;
+/*
+!N = DIP4 & !((HBLANK & DIP3) # VBLANK);
+DMA.D = N;
 BACS = DMA;
+BDCS = DMA;
+*/
+
+DISPLAY_ON = DIP4 & !(HBLANK # VBLANK);
+CPUBUS    = !GAL3_I0;
+GPUBUS    = !DISPLAY_ON;
+RAMCS     = !((!CPU_CLOCK_B & GAL3_I0) # (CPU_CLOCK_B & DISPLAY_ON));
+
+GAL3_O0 = RAMCS;
+GAL3_O1 = CPUBUS;
+GAL3_O2 = GPUBUS;
+GAL3_O3 = GPUBUS & CPUBUS;
+BDCS    = GPUBUS;
+BACS    = GPUBUS # !GPUBUS;
+DMA     = GPUBUS;

@@ -1,80 +1,54 @@
-VIDEO_RAM = $8000
+VRAM = $8000
 
-; Zero page locations
-Z0 = $00
-Z1 = $01
-Z2 = $02
-Z3 = $03
-
-; Memory Locations
-CURSOR = $0400			; 2 bytes
-WIDTH  = $0402			; 1 byte
-HEIGHT = $0403			; 1 byte
-
-VALUE_TO_DECODE = $0404		; 2 bytes
-MOD10           = $0406		; 2 bytes
-DECODED_VALUE   = $0408		; 6 bytes
-
-; Static values
-SCREEN_WIDTH      = 127
-HALF_SCREEN_WIDTH = 64
-COLOR_BLACK	      = $00
-COLOR_PINK	      = $44
+; Memory Locations (zero page)
+CURSOR_X = $fe
+CURSOR_Y = $ff 
 
 ; System libraries
-LIB_VIA_read_input      = $c255
-LIB_LCD_clear           = $c264
-LIB_LCD_initialize      = $c276
-LIB_LCD_print           = $c28d
-LIB_sleep               = $c3a0
-LIB_ACIA_initialize     = $c455
-LIB_ACIA_tx             = $c499
-LIB_VGA_clear_vram      = $e2d6
+LIB_sleep               = $c064
+LIB_VIA_initialize      = $c043
+LIB_VIA_read_input      = $c03b
+LIB_VGA_clear_vram      = $ea27
+
+; Static values
+COLOR_BLACK = $00
+COLOR_WHITE = $ff
+
+X_MAX = 101
+Y_MAX = 76
 
 ; Hi/Lo Byte reference:
-; VIDEO_RAM = $8000
-; lda #<VIDEO_RAM ; Should evaluate to $00
-; lda #>VIDEO_RAM ; Should evaluate to $80
+; VRAM = $8000
+; lda #<VRAM ; Should evaluate to $00
+; lda #>VRAM ; Should evaluate to $80
 
   .segment "CODE"
-  
 
 ; Entry point
 reset:
-  ; Initialize the LCD and clear VRAM
+  ; Initialize the VIA and clear VRAM
   jsr initialize
 
-  ; Set a default width and height of 5 for the test pattern
-  lda #5
-  sta WIDTH
-  lda #5
-  sta HEIGHT
+  ; Set a default cursor position at the beginning of VRAM
+  lda #<VRAM
+  sta CURSOR_X
+  lda #>VRAM
+  sta CURSOR_Y
 
-  ; Prime the first image
-  lda #<VIDEO_RAM
-  sta CURSOR
-  lda #>VIDEO_RAM
-  sta CURSOR + 1
-
-  lda #COLOR_PINK
-  ldy WIDTH
-  ldx HEIGHT
-  jsr draw_line
+  ; Prime the cursor
+  lda #COLOR_WHITE
+  sta (CURSOR_X)
 
 loop:
 @wait_for_input:                                ; Handle keyboard input
-    ldx #4
+    ldx #1
     lda #$ff                                    ; Debounce
-@wait:
     jsr LIB_sleep
-    dex
-    bne @wait
 
     lda #0
     jsr LIB_VIA_read_input
-    beq @wait_for_input                         ; no
+    beq @wait_for_input
       
-@handle_keyboard_input:
     cmp #$04
     beq @move_up                                ; UP key pressed
     cmp #$08
@@ -83,144 +57,70 @@ loop:
     beq @move_left                              ; RIGHT key pressed
     cmp #$02
     beq @move_right                             ; RIGHT key pressed
-    lda #0                                      ; explicitly setting A is a MUST here
-    jmp @wait_for_input                         ; and go around
+
+    lda #0
+    jmp @wait_for_input
 
 @move_up:
-    jsr clear_cursor
-    dec HEIGHT
+    lda #COLOR_BLACK                            ; Blank the cursor
+    sta (CURSOR_X)
+
+    inc CURSOR_Y
+    cmp #Y_MAX                                  ; Has the cursor position moved past the bottom of the screen?
+    bne @draw                                   ; No, proceed with drawing pixel, otherwise reset Y position
+
+@reset_y_cursor:
+    lda #>VRAM
+    sta CURSOR_Y
+
     jmp @draw
 @move_down:
-    inc HEIGHT
+    lda #COLOR_BLACK                            ; Blank the cursor
+    sta (CURSOR_X)
+
+    dec CURSOR_Y
+    bpl @draw                                   ; Has the cursor position moved past the top of the screen?
+
+    lda #Y_MAX - 1
+    sta CURSOR_Y
+
     jmp @draw
 @move_left:
-    jsr clear_cursor
-    dec WIDTH
+    lda #COLOR_BLACK                            ; Blank the cursor
+    sta (CURSOR_X)
+
+    dec CURSOR_X
+    bpl @draw                                   ; Has the cursor position moved past the left side of the screen?
+
+    lda #X_MAX - 1
+    sta CURSOR_X
+
     jmp @draw
 @move_right:
-    inc WIDTH
+    lda #COLOR_BLACK                            ; Blank the cursor
+    sta (CURSOR_X)
+
+    inc CURSOR_X
+    cmp #X_MAX                                  ; Has the cursor position moved past the right side of the screen?
+    bne @draw                                   ; No, proceed with drawing pixel, otherwise reset X position
+
+    lda #<VRAM
+    sta CURSOR_X
+
+    inc CURSOR_Y                                ; In this case increment the Y cursor position nas well
+    cmp #Y_MAX                                  ; Ensure we haven't moved past the bottom of the screen
+    beq @reset_y_cursor
+
 @draw:
-  lda #<VIDEO_RAM
-  sta CURSOR
-  lda #>VIDEO_RAM
-  sta CURSOR + 1
-
-  ; Print current coordinates to UART
-
-  lda #COLOR_PINK
-  ldy WIDTH
-  ldx HEIGHT
-  jsr draw_line
+  lda #COLOR_WHITE
+  sta (CURSOR_X)
 
   lda #0                                      ; explicitly setting A is a MUST here
   jmp @wait_for_input
 
-clear_cursor:
-  lda #<VIDEO_RAM
-  sta CURSOR
-  lda #>VIDEO_RAM
-  sta CURSOR + 1
-
-  lda #COLOR_BLACK
-  ldy WIDTH
-  ldx HEIGHT
-  jsr draw_line
-
-  rts
-
-; Initialize the display
+; Initialize the VIA and clear VRAM
 initialize:
-  jsr LIB_LCD_initialize
-  jsr LIB_LCD_clear
-
-  lda #<load_message
-  ldy #>load_message
-
-  jsr LIB_LCD_print
-
-  jsr LIB_ACIA_initialize
-
-  ; Clear VRAM
   jsr LIB_VGA_clear_vram
+  jsr LIB_VIA_initialize
 
   rts
-
-; Draw a line using the color in A, a width of Y, and a height of X
-
-draw_line:
-  pha ; Temporarily push A to the stack so we can push CURSOR position from memory into Zero Page
-
-  lda CURSOR
-  sta Z0
-  lda CURSOR + 1
-  sta Z1
-
-  pla ; Restore A from the stack (contains the pixel color to store in video memory)
-
-; Columns of pixels are written first, from the maximum width decrementing back to the cursor location.
-; A column of pixels is repeated for each row.
-
-@rows:
-  phy	; Push Y (width) to the stack so it can be restored once each set of columns is written to memory
-@cols:
-  sta (Z0), y	; Write A to the memory location and decrement Y; repeat until Y is 0
-  dey
-  bne @cols
-
-  sta (Z0), y	; Add one last pixel
-
-  ply	; Restore the original value of Y (width) from the stack so it can be used in the next row
-
-  ; If current cursor position is less than SCREEN_WIDTH, increment page 0 instead of 1 (by adding SCREEN_WIDTH)
-
-  pha	; Temporarily save A (our pixel color) to the stack
-
-  lda #SCREEN_WIDTH
-  cmp Z0
-  bcc @increment_memory_page	; Updating page 0 would overflow, so increment page 1
-
-  adc Z0	; Add the accumulator (currently contains SCREEN_WIDTH) to page 0 and store it back in memory
-  sta Z0
-
-  bcs @increment_memory_page	; If adding SCREEN_WIDTH to the particular cursor location causes a carry, we still need to increment page 1
-
-  pla			; Cursor location is set, we can proceed with completing this row of pixels
-  jmp @proceed
-
-@increment_memory_page:
-  inc Z1
-
-  ; If the last move of the cursor pushed out past the visible screen width we need to account for it
-  lda #HALF_SCREEN_WIDTH
-  cmp CURSOR
-  bcs @skip_adjustment
-
-  lda CURSOR 		; Subtract the SCREEN_WIDTH from the cursor (a hack, probably a better way of doing this)
-  sbc #SCREEN_WIDTH
-  sta CURSOR 
-@skip_adjustment:
-  lda CURSOR
-  sta Z0
-
-  pla
-@proceed:
-  dex		; Decrement the counter for this row
-  bne @rows
-
-  ; The row is complete, account for SCREEN_WIDTH
-  lda Z0
-  sbc #SCREEN_WIDTH
-  bpl @update_cursor
-
-  dec Z1
-@update_cursor:
-  ; Update CURSOR memory location with contents of zero page locations
-  sta CURSOR
-  dec Z1
-  lda Z1
-  sta CURSOR + 1
-
-  rts
-
-load_message:
-    .asciiz "Waiting for input..."

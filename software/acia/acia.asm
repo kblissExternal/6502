@@ -1,12 +1,12 @@
 ; Define ACIA address locations
-ACIA_DATA = $4000		; Receive / Transmit
+ACIA_DATA = $7000		; Receive / Transmit
 ACIA_STATUS = ACIA_DATA + 1	; Status register
 ACIA_COMMAND = ACIA_DATA + 2	; Command register
 ACIA_CONTROL = ACIA_DATA + 3	; Control register
 
 ; Delay values
 OUTER_DELAY = 6
-INNER_DELAY = $68
+INNER_DELAY = $ff
 
 ; Initialize ACIA settings
 LIB_ACIA_initialize:
@@ -17,8 +17,8 @@ LIB_ACIA_initialize:
 
     ;lda #$1A        	; 8-N-1, 2400 baud
     ;lda #$1C        	; 8-N-1, 4800 baud
-    lda #$1E        	; 8-N-1, 9600 baud
-    ;lda #$1F        	; 8-N-1, 19200 baud
+    ;lda #$1E        	; 8-N-1, 9600 baud
+    lda #$1F        	; 8-N-1, 19200 baud
 
     sta ACIA_CONTROL    ; Save instruction to CONTROL register
 

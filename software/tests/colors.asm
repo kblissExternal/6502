@@ -18,7 +18,6 @@ SCREEN_HORIZ_OFFSET = 4
 SCREEN_CURSOR = $3fb9		; 2 bytes
 CHARACTER_COLOR = $3fb6		; 1 byte
 
-;LIB_VGA_clear_vram    = $ed6d
 LIB_VGA_draw_pixel    = $ed86
 LIB_VGA_write_character = $edfc
 LIB_VGA_write_string    = $ee83
@@ -95,7 +94,7 @@ LIB_VGA_clear_vram:
     lda #>VRAM
     sta Z1
 
-    lda #$fa ; Data to load into each address
+    lda #$00 ; Data to load into each address
     ldy #0
     ldx #48 ; Number of pages to clear
 @loop:

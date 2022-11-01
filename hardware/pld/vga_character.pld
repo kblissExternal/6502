@@ -1,0 +1,62 @@
+Name            vga_character;
+Partno          VGA-CHAR;
+Revision        01;
+Date            10/07/2022;
+Designer        Korey Bliss;
+Company         ;
+Location        USA;
+Assembly        None;
+Device          g16v8a;
+
+/* Input */
+Pin 1   = CPU_CLOCK;
+Pin 2   = VGACS;
+Pin 3   = RW;
+Pin 4   = A0;
+Pin 5   = A1;
+Pin 6   = A2;
+Pin 7   = A3;
+Pin 8   = CHARCS;
+Pin 9   = CPU;
+
+/* Output */
+Pin 19 = WREQ;
+Pin 18 = CADDL;
+Pin 17 = CADDH;
+Pin 16 = CWRL;
+Pin 15 = CWRH;
+Pin 14 = CRDL;
+Pin 13 = CRDH;
+
+FIELD Address = [A3..A0];
+
+/*
+	7C00	Font Address/Control Buffer (CFONTA)
+	7C01	Font Data Buffer (CFONTD)
+	7C02	Character RAM Address High (CADDH) *
+	7C03	Character RAM Address Low (CADDL) *
+	7C04	Character RAM Data Read High (CRDH) *
+	7C05	Character RAM Data Read Low (CRDL) *
+	7C06	Character RAM Data Write High (CWRH) *
+	7C07	Character RAM Data Write Low (CWRL) *
+	7C08	Charamter RAM Write (WREQ) *
+*/
+
+Address_FACB   = Address:[00];
+Address_FDB    = Address:[01];
+Address_CRAH   = Address:[02];
+Address_CRAL   = Address:[03];
+Address_CRDH   = Address:[04];
+Address_CRDL   = Address:[05];
+Address_CWDH   = Address:[06];
+Address_CWDL   = Address:[07];
+Address_WREQ   = Address:[08];
+
+/*!CRDH  = VGACS & Address_CRDH;*/
+CRDH  = 'b'1;
+CWRH  = VGACS & Address_CWDH & !RW;
+CADDL  = CHARCS;
+CADDH  = CHARCS;
+!CRDL  = CHARCS & RW;
+WREQ.d   = CHARCS & !RW;
+CWRL = WREQ;

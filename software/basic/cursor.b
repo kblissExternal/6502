@@ -1,0 +1,13 @@
+10 LET X = 0
+20 LET Y = 0
+30 DO
+40 GET A
+50 IF A = 74 THEN X = X - 1
+60 IF A = 75 THEN X = X + 1
+70 IF A = 73 THEN Y = Y + 1
+80 IF A = 77 THEN Y = Y - 1
+90 IF X = 101 THEN X = 0 : Y = Y + 1
+100 IF Y = 76 THEN Y = 0
+110 IF A <> 0 THEN PRINT X "," Y
+120 POKE 32768+(128*Y)+X,$ff
+130 LOOP
