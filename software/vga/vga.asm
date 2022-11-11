@@ -1,21 +1,41 @@
 ;================================================================================
+; Zero Page Locations
+;================================================================================
+FONT_PTR        = $E4     ; 2 bytes
+
+;================================================================================
 ; Memory Locations
 ;================================================================================
 VRAM                 = $6000
 VRAM_START           = $6114
-VRAM_LAST            = $6f94
+VRAM_LAST_S          = $6f94
+VRAM_LAST_E          = $6fdd
+
+FONT_LINE            = END_OF_RAM - 1   ; 1 byte
+CURRENT_FONT         = END_OF_RAM - 2   ; 1 byte
+FONT_COUNTER         = END_OF_RAM - 3   ; 1 byte
+VRAM_CURSOR          = END_OF_RAM - 5   ; 2 bytes
+FONT_PAGE            = END_OF_RAM - 6   ; 1 byte
+FONT_VERT            = END_OF_RAM - 7   ; 1 byte
+FONT_ASCII           = END_OF_RAM - 8   ; 1 byte
 
 ;================================================================================
 ; VGA Registers
 ;================================================================================
-FONT_CONTROL   = $7c00
-FONT_DATA      = $7c01
-CHAR_WRI_H     = $7c06
-CHAR_WRI_L     = $7c07
+FONT_CONTROL    = $7c00
+FONT_DATA       = $7c01
+CHAR_ADDR_H     = $7c02
+CHAR_ADDR_L     = $7c03
+CHAR_WRI_H      = $7c06
+CHAR_WRI_L      = $7c07
 
 ;================================================================================
 ; Static values
 ;================================================================================
+FONT_LOAD       = %10110000
+FONT_WRITE      = %01110000
+DISPLAY_MODE    = %10100000
+
 COLOR_WHITE          = $0f
 COLOR_YELLOW         = $0d
 CHARACTER_LINES      = 73
@@ -24,6 +44,10 @@ BYTES_PER_ROW        = 127
 
 ; Clear character RAM
 LIB_VGA_clear_ram:
+    pha
+    phx
+    phy
+
     ldx #16         ; Clear 16 pages of RAM
     lda #>VRAM
     sta Z1
@@ -31,7 +55,7 @@ LIB_VGA_clear_ram:
 @clear_block:
     lda #<VRAM
     sta Z0
-    ldy $ff
+    ldy #$ff
 @clear_page:
     lda #$00            ; Clear byte
     sta (Z0), Y
@@ -45,6 +69,177 @@ LIB_VGA_clear_ram:
     dex
     bne @clear_block
 
+    ply
+    plx
+    pla
+    
+    rts
+
+; Clear the screen and reset the character cursor
+LIB_VGA_initialize:
+    lda #COLOR_WHITE
+    sta CHAR_WRI_H
+
+    jsr LIB_VGA_clear_ram
+
+    lda #<VRAM_START
+    sta VRAM_CURSOR
+    lda #>VRAM_START
+    sta VRAM_CURSOR + 1
+
+    rts
+
+; Put a single character (stored in A) on the screen at the current cursor position
+LIB_VGA_put:
+    pha
+
+    ; Test if this is a printable character
+    cmp #8
+    bcs @check_line_feed
+    jmp @done
+
+; Test if this is a new line character (ignore LF, only act on CR)
+@check_line_feed:
+    cmp #10
+    bne @check_cr
+    jmp @done
+@check_cr:
+    cmp #13
+    beq @newline
+    jmp @continue
+
+@newline:
+    ; Move the cursor down one line
+    lda VRAM_CURSOR
+    cmp #$5d
+    bcs @increment_cursor_page
+
+    lda #<VRAM_LAST_S
+    sta VRAM_CURSOR
+    jmp @done
+
+@increment_cursor_page:
+    lda #<VRAM_START
+    sta VRAM_CURSOR
+    inc VRAM_CURSOR + 1
+    jmp @test_end_screen
+
+@continue:
+    pha
+    lda VRAM_CURSOR
+    sta Z0
+    lda VRAM_CURSOR + 1
+    sta Z1
+    pla
+
+    sta (Z0)
+
+    ; Increment the cursor position
+    inc VRAM_CURSOR
+
+    ; Check to see if the cursor is past the last character in a line
+    lda #<VRAM_LAST_E
+    sbc #$80
+    cmp VRAM_CURSOR
+
+    bne @next
+    lda #<VRAM_START
+    sta VRAM_CURSOR
+    inc VRAM_CURSOR + 1
+    jmp @test_end_screen
+
+@next:
+    adc #$80
+    cmp VRAM_CURSOR
+
+    bne @done
+
+    inc VRAM_CURSOR + 1
+
+@test_end_screen:
+    ; Test if we've gone past the end of the screen
+    lda #>VRAM_LAST_S
+    cmp VRAM_CURSOR + 1
+
+    bcs @done
+
+    jsr LIB_VGA_scroll_screen
+
+@done:
+    pla
+
+    rts
+
+; The cursor has reached the end of the screen; we need to move everything up one line
+LIB_VGA_scroll_screen:
+    pha
+    phy
+    phx
+
+    lda #<VRAM_START
+    sta Z0
+    adc #$80
+    sta Z2
+    lda #>VRAM_START
+    sta Z1
+    sta Z3
+
+    ; Loop through to copy the number of rows - 2 (the last two must be handled differently)
+    ldx #28
+@outer_loop:
+    clc
+    ldy #BYTES_PER_ROW
+@inner_loop:
+    lda (Z2), Y
+    sta (Z0), Y
+    dey
+    bpl @inner_loop
+
+    dex
+    beq @done
+
+    lda Z2
+    cmp Z0
+    sta Z0
+    bcc @mode2
+    inc Z3
+    sbc #$80
+    sta Z2
+    jmp @outer_loop
+
+@mode2:
+    inc Z1
+    sbc #BYTES_PER_ROW
+    sta Z2
+    jmp @outer_loop
+
+@done:
+    ; Handle the last two lines
+    inc Z1
+    ldy #$6b
+@last_line_loop:
+    lda (Z0), Y
+    sta (Z2), Y
+    dey
+    bpl @last_line_loop
+
+    lda #$00
+    ldy #$6b
+@blank_last_line_loop
+    sta (Z0), Y
+    dey
+    bne @blank_last_line_loop
+
+    sta (Z0), Y
+    lda Z0
+    sta VRAM_CURSOR
+    lda Z1
+    sta VRAM_CURSOR + 1
+
+    plx
+    ply
+    pla
+
     rts
 
 ; Print a test pattern
@@ -54,15 +249,17 @@ LIB_VGA_test_pattern:
     ; Set the default font and color
     lda #COLOR_WHITE
     sta CHAR_WRI_H
+    sta CURRENT_FONT
 
     ; Print screen borders
     jsr LIB_VGA_print_absolute_borders
 
     ; Print heading text
-    lda #$63
-    sta Z1
-    lda #$2f
+    lda #<VRAM_START
+    adc #153                 ; Move right and down
     sta Z0
+    lda #>VRAM_START
+    sta Z1
 
     lda #<heading1
     sta Z2
@@ -74,6 +271,7 @@ LIB_VGA_test_pattern:
     ; Change the font color to Yellow for character sets
     lda #COLOR_YELLOW
     sta CHAR_WRI_H
+    sta CURRENT_FONT
 
     ; Print G0 Character set
     jsr LIB_VGA_print_g0_charset
@@ -84,9 +282,15 @@ LIB_VGA_test_pattern:
     ; Change the font color back to White
     lda #COLOR_WHITE
     sta CHAR_WRI_H
+    sta CURRENT_FONT
 
     ; Print color set
     jsr LIB_VGA_print_colors
+
+    ; Reset to the default font / color
+    lda #COLOR_WHITE
+    sta CHAR_WRI_H
+    sta CURRENT_FONT
 
     rts
 
@@ -117,9 +321,9 @@ LIB_VGA_print_absolute_borders:
     sta (Z0), Y
 
     ; Switch to the Southern border
-    lda #<VRAM_LAST
+    lda #<VRAM_LAST_S
     sta Z0
-    lda #>VRAM_LAST
+    lda #>VRAM_LAST_S
     sta Z1
 
     jmp @north_south_border
@@ -142,7 +346,7 @@ LIB_VGA_print_absolute_borders:
     bcs @write_east_west_character
 
     ; Reset Z0 and decrement Z1
-    lda #<VRAM_LAST
+    lda #<VRAM_LAST_S
     sta Z0
     dec Z1
 
@@ -169,15 +373,50 @@ LIB_VGA_print_text:
 @done:
     rts
 
+; Print out each Font set
 LIB_VGA_print_g0_charset:
-    ; Print out the box; it should start on the 10th line (651A)
+    clc
+
+    ; Position the 'cursor' for the first run
     lda #>VRAM_START
-    adc #3              ; 4 rows from the top of the screen
+    adc #1              ; 3 lines from the top of the screen
     sta Z1
     lda #<VRAM_START
-    adc #5              ; 5 characters from the left of the screen
+    adc #7              ; 5 characters from the left of the screen
     sta Z0
 
+    ; Setup the initial font
+    lda CURRENT_FONT
+    sta FONT_COUNTER
+
+    ldx #0
+@font_set_loop:
+    ; Switch back to the default font
+    lda CURRENT_FONT
+    sta CHAR_WRI_H
+
+    ; Print out the identifier of this Font Set
+    clc
+    lda Z0
+    pha
+    lda #$97
+    sta Z0
+    inc Z1
+
+    lda #48
+    sta (Z0)
+    inc Z0
+    txa
+    adc #48
+    sta (Z0)
+
+    pla
+    sta Z0
+    dec Z1
+    clc
+
+    phx
+    ; Print out the box
     ldx #2
 @outer_box_loop:
     lda #196
@@ -198,359 +437,248 @@ LIB_VGA_print_g0_charset:
     bne @outer_box_loop
 
 ; Print box corners and sides
-    lda #218
-    sta $6518   ; Northwest
-    lda #192
-    sta $6798   ; Southwest
+    clc
+    ldy #$41    ; Distance between corners
 
+    ; Move the 'cursor' up and one character right to plot the corners 
+    lda Z1
+    sbc #3
+    sta Z1
+    inc Z0
+
+    lda #218
+    sta (Z0)
     lda #191
-    sta $6559   ; Northeast
+    sta (Z0), Y
+
+    clc
+    ; Move the 'cursor' down
+    lda Z1
+    adc #2
+    sta Z1
+    lda Z0
+    adc #$80
+    sta Z0
+
+    lda #192
+    sta (Z0)
     lda #217
-    sta $67D9   ; Southeast
+    sta (Z0), Y
 
 ; Print sides
-    lda #179
-    sta $6598
-    sta $6618
-    sta $6698
-    sta $6718
-    sta $65D9
-    sta $6659
-    sta $66D9
-    sta $6759
+    ; Move the 'cursor' again
+    clc
+    lda Z0
+    sbc #BYTES_PER_ROW
+    sta Z0
 
-@line1:
+    ldx #4
+@print_side_loop:
+    clc
+    lda #179
+    sta (Z0)
+    sta (Z0), Y
+
+    lda Z0
+    sbc #BYTES_PER_ROW
+    sta Z0
+
+    bpl @side_loop_next
+
+    dec Z1
+@side_loop_next:
+    dex
+    bne @print_side_loop
+
+; Print the characters for this font set
+
+; Move the cursor down and right
+    clc
+    lda Z0
+    adc #$81
+    sta Z0
+
+    stz FONT_LINE
+
+    ldx #4
+@line_loop:
     ldy #$3f
-    lda #$99
+
+    lda FONT_COUNTER
+    sta CHAR_WRI_H
+@character_loop:
+    tya
+    adc FONT_LINE
+    sta (Z0), Y
+    dey
+    bpl @character_loop
+
+    inc Z0                  ; Move the cursor one character to make addition easier
+    lda Z0
+    adc #BYTES_PER_ROW
+    sta Z0
+
+    bcc @increment_line_loop
+    inc Z1
+
+@increment_line_loop;
+    lda #$3f
+    adc FONT_LINE
+    sta FONT_LINE
+    dex
+    bne @line_loop
+
+    ; End of loops for an individual font set; restore X from the stack and decrement
+    plx
+    inx
+    cpx #4
+    beq @exit
+
+    ; Increment the cursor
+    clc
+    lda Z0
+    adc #BYTES_PER_ROW
+    sta Z0
+    inc Z0
+
+    bcc @continue_font_set_loop
+    inc Z1
+
+@continue_font_set_loop:
+    ; Increment the font set
+    clc
+    lda FONT_COUNTER
+    adc #$10
+    sta FONT_COUNTER
+
+    jmp @font_set_loop
+
+@exit:
+
+    rts
+
+LIB_VGA_print_colors:
+    ; Print number values for each color
+    lda #>VRAM_LAST_S
+    sta Z1
+    lda #<VRAM_LAST_S
+    sbc #BYTES_PER_ROW
+    adc #12              ; Move the cursor right
+    sta Z0
+
+    lda #<color_identifiers
+    sta Z2
+    lda #>color_identifiers
+    sta Z3
+    
+    jsr LIB_VGA_print_text
+
+    ; Colors
+    
+    dec Z1
+    lda Z0
+    adc #BYTES_PER_ROW 
+    adc #30              ; Move the cursor right
+    sta Z0
+    clc
+
+    ldy #$0f
+@color_loop:
+    tya
+    sta CHAR_WRI_H
+
+    ; Print each color three times
+    lda #219
+    sta (Z0), Y
+    inc Z0
+    sta (Z0), Y
+    inc Z0
+    sta (Z0), Y
+
+    dec Z0
+    dec Z0
+    dec Z0
+    dec Z0
+
+    dey
+    bpl @color_loop
+
+    rts
+
+LIB_VGA_circleman:
+    ; Clear the RAM and change the default color to yellow
+    jsr LIB_VGA_clear_ram
+    lda #COLOR_YELLOW
+    sta CHAR_WRI_H
+
+    lda #$10
     sta Z0
     lda #$65
     sta Z1
 
-@line1_loop:
-    tya
+    ; $e6 = back half
+    ; $e7 = front half (mouth closed)
+    ; $e8 = front half (mouth open)
+
+    ; Move circle man to the far right side of the screen
+    ldx #0
+    ldy #2
+@move_right_loop:
+    phy
+    phx
+    ; Delay
+    ldx $0300
+@delay_outer:
+    ldy $0301
+@delay_inner:
+    nop
+    nop
+    dey
+    bne @delay_inner
+    dex
+    bne @delay_outer
+
+    plx
+    ply
+
+    ; Clear any previous tracks
+    lda #$00
+    dey
     sta (Z0), Y
     dey
-    bne @line1_loop
-
-@line2:
-    ldy #$40
-    lda #$18
-    sta Z0
-    lda #$66
-    sta Z1
-
-@line2_loop:
-    tya
-    adc #$3f
     sta (Z0), Y
-    dey
-    bne @line2_loop
+    iny
+    iny
 
-@line3:
-    ldy #$40
-    lda #$98
-    sta Z0
-    lda #$66
-    sta Z1
-
-@line3_loop:
-    tya
-    adc #$7f
+    ; Print back half
+    lda #$e6
     sta (Z0), Y
-    dey
-    bne @line3_loop
+    iny
 
-@line4:
-    ldy #$40
-    lda #$18
-    sta Z0
-    lda #$67
-    sta Z1
-
-@line4_loop:
-    tya
-    adc #$bf
+    ; Print front half
+    inx
+    txa
+    lsr A
+    bcc @print_mouth_open
+    lda #$e7
+    jmp @print_front_half
+@print_mouth_open
+    lda #$e8
+@print_front_half
     sta (Z0), Y
-    dey
-    bne @line4_loop
 
-    rts
-
-LIB_VGA_print_g1_charset:
-    rts
-
-LIB_VGA_print_colors:
-    ; Numbers
-
-    ; 0
-    lda #$00
-    sta $6a21
-    lda #$30
-    sta $6a22
-    lda #$00
-    sta $6a23
-
-    ; 1
-    lda #$00
-    sta $6a24
-    lda #$31
-    sta $6a25
-    lda #$00
-    sta $6a26
-
-    ; 2
-    lda #$00
-    sta $6a27
-    lda #$32
-    sta $6a28
-    lda #$00
-    sta $6a29
-
-    ; 3
-    lda #$00
-    sta $6a2a
-    lda #$33
-    sta $6a2b
-    lda #$00
-    sta $6a2c
-
-    ; 4
-    lda #$00
-    sta $6a2d
-    lda #$34
-    sta $6a2e
-    lda #$00
-    sta $6a2f
-
-    ; 5
-    lda #$00
-    sta $6a30
-    lda #$35
-    sta $6a31
-    lda #$00
-    sta $6a32
-
-    ; 6
-    lda #$00
-    sta $6a33
-    lda #$36
-    sta $6a34
-    lda #$00
-    sta $6a35
-
-    ; 7
-    lda #$00
-    sta $6a36
-    lda #$37
-    sta $6a37
-    lda #$00
-    sta $6a38
-
-    ; 8
-    lda #$00
-    sta $6a39
-    lda #$38
-    sta $6a3a
-    lda #$00
-    sta $6a3b
-
-    ; 9
-    lda #$00
-    sta $6a3c
-    lda #$39
-    sta $6a3d
-    lda #$00
-    sta $6a3e
-
-    ; 10
-    lda #$00
-    sta $6a3f
-    lda #$31
-    sta $6a40
-    lda #$30
-    sta $6a41
-
-    ; 11
-    lda #$00
-    sta $6a42
-    lda #$31
-    sta $6a43
-    lda #$31
-    sta $6a44
-
-    ; 12
-    lda #$00
-    sta $6a45
-    lda #$31
-    sta $6a46
-    lda #$32
-    sta $6a47
-
-    ; 13
-    lda #$00
-    sta $6a48
-    lda #$31
-    sta $6a49
-    lda #$33
-    sta $6a4a
-
-    ; 14
-    lda #$00
-    sta $6a4b
-    lda #$31
-    sta $6a4c
-    lda #$34
-    sta $6a4d
-
-    ; 15
-    lda #$00
-    sta $6a4e
-    lda #$31
-    sta $6a4f
-    lda #$35
-    sta $6a50
-
-    ; Colors
-    lda #$01
-    sta $7c06
-
-    lda #219
-    sta $69a4
-    sta $69a5
-    sta $69a6
-
-    lda #$02
-    sta $7c06
-
-    lda #219
-    sta $69a7
-    sta $69a8
-    sta $69a9
-
-    lda #$03
-    sta $7c06
-
-    lda #219
-    sta $69aa
-    sta $69ab
-    sta $69ac
-
-    lda #$04
-    sta $7c06
-
-    lda #219
-    sta $69ad
-    sta $69ae
-    sta $69af
-
-    lda #$05
-    sta $7c06
-
-    lda #219
-    sta $69b0
-    sta $69b1
-    sta $69b2
-
-    lda #$06
-    sta $7c06
-
-    lda #219
-    sta $69b3
-    sta $69b4
-    sta $69b5
-
-    lda #$07
-    sta $7c06
-
-    lda #219
-    sta $69b6
-    sta $69b7
-    sta $69b8
-
-    lda #$08
-    sta $7c06
-
-    lda #219
-    sta $69b9
-    sta $69ba
-    sta $69bb
-
-    lda #$09
-    sta $7c06
-
-    lda #219
-    sta $69bc
-    sta $69bd
-    sta $69be
-
-    lda #$0a
-    sta $7c06
-
-    lda #219
-    sta $69bf
-    sta $69c0
-    sta $69c1
-
-    lda #$0b
-    sta $7c06
-
-    lda #219
-    sta $69c2
-    sta $69c3
-    sta $69c4
-
-    lda #$0c
-    sta $7c06
-
-    lda #219
-    sta $69c5
-    sta $69c6
-    sta $69c7
-
-    lda #$0d
-    sta $7c06
-
-    lda #219
-    sta $69c8
-    sta $69c9
-    sta $69ca
-
-    lda #$0e
-    sta $7c06
-
-    lda #219
-    sta $69cb
-    sta $69cc
-    sta $69cd
-
-    lda #$0f
-    sta $7c06
-
-    lda #219
-    sta $69ce
-    sta $69cf
-    sta $69d0
+    iny
+    cpy #BYTES_PER_ROW
+    bcc @move_right_loop
 
     rts
 
 heading1:
   .asciiz "Simple 6502 Based Computer"
+color_identifiers:
+  .asciiz " 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15"
 
 initialize_fonts:
-
-; Zero Page locations
-FONT_PTR        = $00     ; 2 bytes
-
-; Memory locations
-FONT_PAGE       = $0200   ; 1 byte
-FONT_VERT       = $0201   ; 1 byte
-FONT_ASCII      = $0202   ; 1 byte
-
-; Static values
-FONT_LOAD       = %11010000
-FONT_WRITE      = %11100000
-DISPLAY_MODE    = %10010000
-
     ; Change to Font Load mode
     lda #FONT_LOAD
     sta FONT_CONTROL
@@ -603,29 +731,6 @@ vert_loop:
     ; Next, write the actual data for this Page/ASCII/Line combination into the Font Data Buffer
     lda (FONT_PTR), Y
 
-    ; Determine if manipulation needs to be performed for additional pages
-    pha
-
-    ; Check to see if this is the last vertical index AND this is the 'underline' style
-    cpy #15
-    bcc check_reverse       ; No, check the next setting
-    lda #%00100000          ; Check to see if the 'underline' style is selected
-    bit FONT_PAGE
-    beq check_reverse       ; No, check the next setting
-
-    ; This is the last vertical line of an underline character, replace the value on the stack with $ff
-    pla
-    lda #$ff
-    pha
-
-check_reverse:
-    lda #%01000000          ; Check to see if the 'reverse' style is selected
-    bit FONT_PAGE
-    pla
-    bne write_data          ; No, write the data
-
-    ; Reverse the bit values
-    eor #$ff
 write_data:
     sta FONT_DATA
 
@@ -647,7 +752,7 @@ write_data:
 
     ; Increase the position of the Font bitmap pointer
     lda FONT_PTR
-    adc #16                 ; Each bitmap is 16 bytes
+    adc #15                 ; Each bitmap is 16 bytes
     sta FONT_PTR
 
     bcc increment_ascii     ; If there is no carry proceed with incrementing the ASCII character
@@ -658,22 +763,34 @@ increment_ascii:
                             ; will be set to 0 and the Z flag set
     bne vert_loop           ; Additional ASCII characters need to be written, proceed back to the vertical loop
 
-increment_style:
-    ; All ASCII characters for this style have been written, move on to the next style
-
-    ; Reset the Font bitmap pointer
-    lda #<FONT_ASCII_DATA
-    sta FONT_PTR
-    lda #>FONT_ASCII_DATA
-    sta FONT_PTR + 1
-
-    lda FONT_PAGE
-    adc #$20                ; Add $20 to affect only the 3 highest bits
-    sta FONT_PAGE
-    bcc vert_loop           ; If carry is not set continue back into the vertical counter loop
-
-    ; Otherwise set display mode to on and exit
+    ; Set display mode to on and exit
     lda DISPLAY_MODE
+    sta FONT_CONTROL
+
+    rts
+
+font_test:
+    lda #FONT_LOAD
+    sta FONT_CONTROL
+
+    ldy #$0f
+@loop:
+    lda #$00
+    sta CHAR_WRI_H
+    lda #$00
+    sta CHAR_WRI_L
+
+    lda #$ff
+    sta FONT_DATA
+
+    tya
+    ora #FONT_WRITE
+    sta FONT_CONTROL
+
+    dey
+    bpl @loop
+
+    lda #DISPLAY_MODE
     sta FONT_CONTROL
 
     rts

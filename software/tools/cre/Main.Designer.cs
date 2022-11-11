@@ -32,11 +32,14 @@ partial class Main
         // Load file data
         var lineData = System.IO.File.ReadAllLines(FILENAME);
         fileData = new byte[lineData.Length];
-        //fileData = new byte[lineData.Length / 2];
         for(int i = 0; i < lineData.Length; i++) {
-            //if (i % 2 == 0)
-                fileData[i] = byte.Parse(lineData[i].Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            fileData[i] = byte.Parse(lineData[i].Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
         }
+        /*
+        var lineData = System.IO.File.ReadAllBytes(BYTE_FILE);
+        fileData = new byte[lineData.Length];
+        Array.Copy(lineData, fileData, lineData.Length);
+        */
 
         this.components = new System.ComponentModel.Container();
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -185,16 +188,40 @@ partial class Main
         Array.Copy(fileData, 0, byteData, 0, 4096);
 
         // Write the cursor (reverse) font set
-        Array.Copy(fileData, 0, byteData, 4096, 4096);
+        Array.Copy(GetReverseFont(fileData), 0, byteData, 4096, 4096);
+        //Array.Copy(fileData, 0, byteData, 4096, 4096);
 
         // Write the underline font set
-        Array.Copy(fileData, 0, byteData, 8192, 4096);
+        //Array.Copy(fileData, 0, byteData, 8192, 4096);
+        Array.Copy(GetUnderlineFont(fileData), 0, byteData, 8192, 4096);
 
         // Write the reverse and underline font set
         Array.Copy(fileData, 0, byteData, 12288, 4096);
 
         // Write the bytes to a file
         System.IO.File.WriteAllBytes(BYTE_FILE, byteData);
+    }
+
+    private byte[] GetReverseFont(byte[] input) {
+        byte[] result = new byte[input.Length];
+
+        for(int i = 0; i < result.Length; i++)
+            result[i] = (byte)(~(int)input[i]);
+
+        return result;
+    }
+
+    private byte[] GetUnderlineFont(byte[] input) {
+        byte[] result = new byte[input.Length];
+
+        Array.Copy(input, 0, result, 0, input.Length);
+
+        // Set every 16th byte to $ff
+        for(int i = 0; i < input.Length; i += 16) {
+            result[i] = 0xff;
+        }
+
+        return result;
     }
 
     private void SaveData(Object sender, EventArgs e) {

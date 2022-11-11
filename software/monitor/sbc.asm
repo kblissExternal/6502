@@ -39,7 +39,7 @@ PREG           =     $03e6             ; hold status register (P)
 ;
 Input_chr      jmp   LIB_ACIA_rx_wait  ; wait for input character
 Scan_input     jmp   LIB_ACIA_rx       ; scan for input (no wait), C=1 char, C=0 no character
-OUTPUT         jmp   LIB_ACIA_tx       ; send 1 character
+OUTPUT         jmp   LIB_put           ; send 1 character
 ;
 ;               
 ; *************************************************************************

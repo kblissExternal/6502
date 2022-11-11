@@ -17,10 +17,10 @@
   .feature loose_char_term
 
 ; Zero page locations
-Z0 = $00                                        
-Z1 = $01
-Z2 = $02
-Z3 = $03
+Z0 = $E0                                        
+Z1 = $E1
+Z2 = $E2
+Z3 = $E3
 
 ;================================================================================
 ; VIA
@@ -50,6 +50,7 @@ main:
     ldx #$ff                                    ; Initialize the stackpointer with 0xff
     txs
 
+    jsr LIB_VGA_initialize
     jsr LIB_run_monitor                         ; Run the monitor subroutine
 
     jmp main                                    ; Restart if we ever end up back here
@@ -111,6 +112,13 @@ LIB_VIA_read_input:
 LIB_VIA_initialize:
     stx DDRA                                    ; Configure data direction for port A
     sta DDRB                                    ; Configure data direction for port B
+
+    rts
+
+; Put a single character (stored in A) to VGA and ACIA
+LIB_put:
+    jsr LIB_ACIA_tx
+    jsr LIB_VGA_put
 
     rts
 
@@ -234,7 +242,7 @@ LAB_nobyw
 
 LAB_vec:
     .word ACIAin       	    ; Byte in from ACIA
-    .word LIB_ACIA_tx       ; Byte out to ACIA
+    .word LIB_put           ; Byte out to VGA and ACIA
     .word no_load           ; Null Load vector for EhBASIC
     .word no_save           ; Null Save vector for EhBASIC
 
@@ -260,8 +268,8 @@ LAB_mess
 
 .include "..\acia\acia.asm"
 .include "..\vga\vga.asm"
-.include "..\ehbasic\ehbasic.asm"
 .include "..\monitor\sbc.asm"
+.include "..\ehbasic\ehbasic.asm"
 
 .segment "MONITOR"
 ISR
